@@ -1,6 +1,7 @@
 let screen = {
   print: "0",
   clear: false,
+  validCharacters: [".", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
 };
 let operation = {
   number: {
@@ -8,6 +9,8 @@ let operation = {
     second: null,
   },
   sign: null,
+  justStarted: false,
+  validSigns: ["+", "-", "*", "/"],
 };
 
 function calculateDimensions() {
@@ -20,7 +23,7 @@ function calculateDimensions() {
 
 function refreshScreen() {
   document.querySelector(".calculator__screen").textContent = screen.print;
-  screen.print = screen.clear ? "0" : screen.print;
+  screen.print = screen.clear ? "0" : screen.print.toString();
   screen.clear = false;
 }
 
@@ -47,6 +50,7 @@ function float(num1, num2 = 5) {
 }
 
 function equals() {
+  screen.clear = true;
   switch (operation.sign) {
     case "+":
       screen.print = add(operation.number.first, operation.number.second);
@@ -67,9 +71,13 @@ function equals() {
 }
 
 function startOperation(sign) {
+  if (operation.number.first !== null) {
+    endOperation();
+  }
   operation.sign = sign;
   screen.clear = true;
   operation.number.first = parseFloat(screen.print);
+  operation.justStarted = true;
 }
 
 function endOperation() {
@@ -77,29 +85,54 @@ function endOperation() {
   equals();
 }
 
+function clear() {
+  screen.print = "0";
+  operation.number.first = null;
+  operation.number.second = null;
+  operation.number.float = null;
+  operation.sign = null;
+}
+
+function deleteCharacter() {
+  if (operation.justStarted) {
+    return;
+  }
+  if (!isNaN(screen.print)) {
+    screen.print = screen.print.length === 1 ? "0" : screen.print.slice(0, -1);
+  }
+}
+
+function writeScreen(button) {
+  if (screen.print.length > 10) {
+    return;
+  }
+  if (button === ".") {
+    if (!screen.print.includes(".")) {
+      screen.print = screen.print.concat("", button);
+    }
+  } else if (screen.print === "0") {
+    screen.print = button;
+  } else {
+    screen.print = screen.print.concat("", button);
+  }
+  operation.justStarted = false;
+}
+
 function registerOperation(button) {
   if (button === "c") {
-    screen.print = "0";
-    operation.number.first = null;
-    operation.number.second = null;
-    operation.number.float = null;
-    operation.sign = null;
+    clear();
   }
   if (button === "=") {
     endOperation();
   }
   if (button === "d") {
-    screen.print = screen.print === "0" ? "0" : screen.print.slice(0, -1);
+    deleteCharacter();
   }
-  if (["+", "-", "*", "/"].includes(button)) {
+  if (operation.validSigns.includes(button)) {
     startOperation(button);
   }
-  if (button === ".") {
-    screen.print = screen.print.concat("", button);
-  }
-  if (["0", "1", "2", "3", "4", "5", "6", "7", "8", "9"].includes(button)) {
-    screen.print =
-      screen.print === "0" ? button : screen.print.concat("", button);
+  if (screen.validCharacters.includes(button)) {
+    writeScreen(button);
   }
   refreshScreen();
 }
