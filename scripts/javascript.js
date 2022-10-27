@@ -77,7 +77,7 @@ function endOperation() {
   equals();
 }
 
-function populateOperation(button) {
+function registerOperation(button) {
   if (button === "c") {
     screen.print = "0";
     operation.number.first = null;
@@ -106,62 +106,130 @@ function populateOperation(button) {
 
 function initButtons() {
   const addButton = document.querySelector(".calculator__buttons__add");
-  addButton.addEventListener("click", () => populateOperation("+"));
+  addButton.addEventListener("click", () => registerOperation("+"));
 
   const substractButton = document.querySelector(
     ".calculator__buttons__substract"
   );
-  substractButton.addEventListener("click", () => populateOperation("-"));
+  substractButton.addEventListener("click", () => registerOperation("-"));
 
   const multiplyButton = document.querySelector(
     ".calculator__buttons__multiply"
   );
-  multiplyButton.addEventListener("click", () => populateOperation("*"));
+  multiplyButton.addEventListener("click", () => registerOperation("*"));
 
   const divideButton = document.querySelector(".calculator__buttons__divide");
-  divideButton.addEventListener("click", () => populateOperation("/"));
+  divideButton.addEventListener("click", () => registerOperation("/"));
 
   const equalsButton = document.querySelector(".calculator__buttons__equals");
-  equalsButton.addEventListener("click", () => populateOperation("="));
+  equalsButton.addEventListener("click", () => registerOperation("="));
 
   const floatButton = document.querySelector(".calculator__buttons__float");
-  floatButton.addEventListener("click", () => populateOperation("."));
+  floatButton.addEventListener("click", () => registerOperation("."));
 
   const clearButton = document.querySelector(".calculator__buttons__clear");
-  clearButton.addEventListener("click", () => populateOperation("c"));
+  clearButton.addEventListener("click", () => registerOperation("c"));
 
   const deleteButton = document.querySelector(".calculator__buttons__delete");
-  deleteButton.addEventListener("click", () => populateOperation("d"));
+  deleteButton.addEventListener("click", () => registerOperation("d"));
 
   const oneButton = document.querySelector(".calculator__buttons__one");
-  oneButton.addEventListener("click", () => populateOperation("1"));
+  oneButton.addEventListener("click", () => registerOperation("1"));
 
   const twoButton = document.querySelector(".calculator__buttons__two");
-  twoButton.addEventListener("click", () => populateOperation("2"));
+  twoButton.addEventListener("click", () => registerOperation("2"));
 
   const threeButton = document.querySelector(".calculator__buttons__three");
-  threeButton.addEventListener("click", () => populateOperation("3"));
+  threeButton.addEventListener("click", () => registerOperation("3"));
 
   const fourButton = document.querySelector(".calculator__buttons__four");
-  fourButton.addEventListener("click", () => populateOperation("4"));
+  fourButton.addEventListener("click", () => registerOperation("4"));
 
   const fiveButton = document.querySelector(".calculator__buttons__five");
-  fiveButton.addEventListener("click", () => populateOperation("5"));
+  fiveButton.addEventListener("click", () => registerOperation("5"));
 
   const sixButton = document.querySelector(".calculator__buttons__six");
-  sixButton.addEventListener("click", () => populateOperation("6"));
+  sixButton.addEventListener("click", () => registerOperation("6"));
 
   const sevenButton = document.querySelector(".calculator__buttons__seven");
-  sevenButton.addEventListener("click", () => populateOperation("7"));
+  sevenButton.addEventListener("click", () => registerOperation("7"));
 
   const eightButton = document.querySelector(".calculator__buttons__eight");
-  eightButton.addEventListener("click", () => populateOperation("8"));
+  eightButton.addEventListener("click", () => registerOperation("8"));
 
   const nineButton = document.querySelector(".calculator__buttons__nine");
-  nineButton.addEventListener("click", () => populateOperation("9"));
+  nineButton.addEventListener("click", () => registerOperation("9"));
 
   const zeroButton = document.querySelector(".calculator__buttons__zero");
-  zeroButton.addEventListener("click", () => populateOperation("0"));
+  zeroButton.addEventListener("click", () => registerOperation("0"));
+
+  document.addEventListener("keyup", function (event) {
+    switch (event.key) {
+      case "+":
+        registerOperation("+");
+        break;
+      case "-":
+        registerOperation("-");
+        break;
+      case "*":
+        registerOperation("*");
+        break;
+      case "/":
+        registerOperation("/");
+        break;
+      case "=":
+        registerOperation("=");
+        break;
+      case "Enter":
+        registerOperation("=");
+        break;
+      case ".":
+        registerOperation(".");
+        break;
+      case "c":
+        registerOperation("c");
+        break;
+      case "Delete":
+        registerOperation("c");
+        break;
+      case "Backspace":
+        registerOperation("d");
+        break;
+      case "0":
+        registerOperation("0");
+        break;
+      case "1":
+        registerOperation("1");
+        break;
+      case "2":
+        registerOperation("2");
+        break;
+      case "3":
+        registerOperation("3");
+        break;
+      case "4":
+        registerOperation("4");
+        break;
+      case "5":
+        registerOperation("5");
+        break;
+      case "6":
+        registerOperation("6");
+        break;
+      case "7":
+        registerOperation("7");
+        break;
+      case "8":
+        registerOperation("8");
+        break;
+      case "9":
+        registerOperation("9");
+        break;
+
+      default:
+        break;
+    }
+  });
 }
 
 calculateDimensions();
