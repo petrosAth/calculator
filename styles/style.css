@@ -52,6 +52,10 @@ body {
   grid-row: 3 / 5;
 }
 
+.calculator__buttons__float {
+  font-size: 0.75rem;
+}
+
 .calculator__buttons__equals {
   grid-column: 3 / 5;
 }
