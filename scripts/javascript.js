@@ -23,7 +23,7 @@ function calculateDimensions() {
 
 function refreshScreen() {
   document.querySelector(".calculator__screen").textContent = screen.print;
-  screen.print = screen.clear ? "0" : screen.print.toString();
+  screen.print = screen.clear ? "0" : screen.print;
   screen.clear = false;
 }
 
@@ -50,7 +50,6 @@ function float(num1, num2 = 5) {
 }
 
 function equals() {
-  screen.clear = true;
   switch (operation.sign) {
     case "+":
       screen.print = add(operation.number.first, operation.number.second);
@@ -97,7 +96,7 @@ function deleteCharacter() {
   if (operation.justStarted) {
     return;
   }
-  if (!isNaN(screen.print)) {
+  if (typeof screen.print === "string") {
     screen.print = screen.print.length === 1 ? "0" : screen.print.slice(0, -1);
   }
 }
