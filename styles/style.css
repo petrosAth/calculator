@@ -15,7 +15,6 @@ body {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: repeat(7, 1fr);
-  /* width: 30vw; */
   height: 90vh;
   gap: 1rem;
   padding: 1rem;
@@ -28,6 +27,11 @@ body {
   grid-row: 1 / 3;
   background-color: rgb(200, 150, 150);
   border-radius: 0.5rem;
+  display: flex;
+  justify-content: right;
+  align-items: flex-end;
+  font-size: 3rem;
+  padding: 1rem;
 }
 
 .calculator__buttons {
@@ -40,7 +44,8 @@ body {
 
 .calculator__buttons > * {
   border-radius: 0.5rem;
-  font-size: 3rem;
+  font-size: 2rem;
+  line-height: 0;
 }
 
 .calculator__buttons__delete {
@@ -53,7 +58,7 @@ body {
 }
 
 .calculator__buttons__float {
-  font-size: 0.75rem;
+  font-size: 0.5rem;
 }
 
 .calculator__buttons__equals {
