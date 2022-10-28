@@ -113,6 +113,7 @@ function clear() {
   operation.number.second = null;
   operation.sign = null;
   operation.active = null;
+  showActiveOperation();
 }
 
 function deleteCharacter() {
