@@ -125,3 +125,8 @@ body {
   /* Push the button downwards when pressed */
   transform: translateY(0);
 }
+
+.calculator__buttons--active {
+  background: rgb(70, 70, 70);
+  color: rgb(220, 220, 220);
+}

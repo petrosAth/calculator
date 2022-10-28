@@ -1,7 +1,7 @@
 let screen = {
   print: "0",
   clear: false,
-  validCharacters: [".", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+  validCharacters: ["float", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
 };
 let operation = {
   number: {
@@ -10,7 +10,8 @@ let operation = {
   },
   sign: null,
   justStarted: false,
-  validSigns: ["+", "-", "*", "/"],
+  validSigns: ["add", "substract", "multiply", "divide"],
+  active: null,
 };
 
 function calculateDimensions() {
@@ -25,6 +26,24 @@ function refreshScreen() {
   document.querySelector(".calculator__screen--top").textContent = screen.print;
   screen.print = screen.clear ? "0" : screen.print;
   screen.clear = false;
+}
+
+function showActiveOperation() {
+  if (operation.active !== null) {
+    let activeButton = document.querySelector(
+      `.calculator__buttons__${operation.active}--sign--top`
+    );
+    activeButton.style.background = "rgb(70, 70, 70)";
+    activeButton.style.color = "rgb(220, 220, 220)";
+    return;
+  }
+  let signButtons = document.querySelectorAll(
+    `[class^="calculator__buttons"][class$="--sign--top"]`
+  );
+  signButtons.forEach(function (button) {
+    button.style.background = "var(--button-sign_color)";
+    button.style.color = "var(--button_outline_color)";
+  });
 }
 
 function add(num1, num2) {
@@ -51,16 +70,16 @@ function float(num1, num2 = 5) {
 
 function equals() {
   switch (operation.sign) {
-    case "+":
+    case "add":
       screen.print = add(operation.number.first, operation.number.second);
       break;
-    case "-":
+    case "substract":
       screen.print = substract(operation.number.first, operation.number.second);
       break;
-    case "*":
+    case "multiply":
       screen.print = multiply(operation.number.first, operation.number.second);
       break;
-    case "/":
+    case "divide":
       screen.print = divide(operation.number.first, operation.number.second);
       break;
 
@@ -73,14 +92,18 @@ function startOperation(sign) {
   if (operation.number.first !== null) {
     endOperation();
   }
+  operation.active = sign;
   operation.sign = sign;
   screen.clear = true;
   operation.number.first = parseFloat(screen.print);
   operation.justStarted = true;
+  showActiveOperation();
 }
 
 function endOperation() {
   operation.number.second = parseFloat(screen.print);
+  operation.active = null;
+  showActiveOperation();
   equals();
 }
 
@@ -88,8 +111,8 @@ function clear() {
   screen.print = "0";
   operation.number.first = null;
   operation.number.second = null;
-  operation.number.float = null;
   operation.sign = null;
+  operation.active = null;
 }
 
 function deleteCharacter() {
@@ -105,11 +128,11 @@ function writeScreen(button) {
   if (screen.print.length > 10) {
     return;
   }
-  if (button === ".") {
-    if (!screen.print.includes(".")) {
-      screen.print = screen.print.concat("", button);
+  if (button === "float") {
+    if (!screen.print.includes("float")) {
+      screen.print = screen.print.concat("", ".");
     }
-  } else if (screen.print === "0") {
+  } else if (screen.print === "0" || typeof screen.print !== "string") {
     screen.print = button;
   } else {
     screen.print = screen.print.concat("", button);
@@ -138,22 +161,28 @@ function registerOperation(button) {
 
 function initButtons() {
   const addButton = document.querySelector(".calculator__buttons__add--sign");
-  addButton.addEventListener("click", () => registerOperation("+"));
+  addButton.addEventListener("click", (event) => registerOperation("add"));
 
   const substractButton = document.querySelector(
     ".calculator__buttons__substract--sign"
   );
-  substractButton.addEventListener("click", () => registerOperation("-"));
+  substractButton.addEventListener("click", (event) =>
+    registerOperation("substract")
+  );
 
   const multiplyButton = document.querySelector(
     ".calculator__buttons__multiply--sign"
   );
-  multiplyButton.addEventListener("click", () => registerOperation("*"));
+  multiplyButton.addEventListener("click", (event) =>
+    registerOperation("multiply")
+  );
 
   const divideButton = document.querySelector(
     ".calculator__buttons__divide--sign"
   );
-  divideButton.addEventListener("click", () => registerOperation("/"));
+  divideButton.addEventListener("click", (event) =>
+    registerOperation("divide")
+  );
 
   const equalsButton = document.querySelector(
     ".calculator__buttons__equals--sign"
@@ -161,7 +190,7 @@ function initButtons() {
   equalsButton.addEventListener("click", () => registerOperation("="));
 
   const floatButton = document.querySelector(".calculator__buttons__float");
-  floatButton.addEventListener("click", () => registerOperation("."));
+  floatButton.addEventListener("click", () => registerOperation("float"));
 
   const clearButton = document.querySelector(
     ".calculator__buttons__clear--utility"
@@ -205,17 +234,17 @@ function initButtons() {
 
   document.addEventListener("keyup", function (event) {
     switch (event.key) {
-      case "+":
-        registerOperation("+");
+      case "add":
+        registerOperation("add");
         break;
-      case "-":
-        registerOperation("-");
+      case "substract":
+        registerOperation("substract");
         break;
-      case "*":
-        registerOperation("*");
+      case "multiply":
+        registerOperation("multiply");
         break;
-      case "/":
-        registerOperation("/");
+      case "divide":
+        registerOperation("divide");
         break;
       case "=":
         registerOperation("=");
@@ -223,8 +252,8 @@ function initButtons() {
       case "Enter":
         registerOperation("=");
         break;
-      case ".":
-        registerOperation(".");
+      case "float":
+        registerOperation("float");
         break;
       case "c":
         registerOperation("c");
