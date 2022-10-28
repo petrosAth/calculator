@@ -12,28 +12,45 @@ body {
 
 .calculator {
   margin: 5vh auto;
+  border-radius: 1.25vh;
+  background: rgb(50, 50, 50);
+  height: 90vh;
+  aspect-ratio: 3/4;
+}
+
+.calculator--top {
   display: grid;
   grid-template-columns: 1fr;
   grid-template-rows: repeat(7, 1fr);
-  height: 90vh;
   gap: 2.5vh;
   padding: 2.5vh;
-  background-color: rgb(200, 200, 200);
-  border-radius: 1vh;
-  aspect-ratio: 3/4;
+  background-color: rgb(180, 180, 180);
+  border-radius: 1.25vh;
+  height: 100%;
+  transform: translateY(-0.6vh);
 }
 
 .calculator__screen {
   grid-row: 1 / 3;
-  background-color: rgb(200, 150, 150);
-  border-radius: 1vh;
+  border-radius: 1.25vh;
+  background: rgb(50, 50, 50);
+}
+
+.calculator__screen--top {
   flex: 1;
   display: flex;
+  width: 100%;
+  height: 100%;
   overflow: hidden;
   justify-content: right;
   align-items: flex-end;
   font-size: 10vh;
   padding: 1vh;
+  border: 0.3vh solid rgb(50, 50, 50);
+  border-radius: 1.25vh;
+  background: rgb(210, 156, 91);
+  color: rgb(50, 50, 50);
+  transform: translateY(0.6vh);
 }
 
 .calculator__buttons {
@@ -44,17 +61,25 @@ body {
   gap: 1vh;
 }
 
+/* From uiverse.io by @Voxybuns */
 .calculator__buttons > * {
-  border-radius: 1vh;
   font-size: 5vh;
-  line-height: 0;
+  /* Variables */
+  --button_radius: 1.25vh;
+  --button_color: rgb(220, 220, 220);
+  --button-sign_color: rgb(204, 210, 91);
+  --button-utility_color: rgb(210, 97, 91);
+  --button_outline_color: rgb(50, 50, 50);
+  border: none;
+  border-radius: var(--button_radius);
+  background: var(--button_outline_color);
 }
 
-.calculator__buttons__delete {
+.calculator__buttons__delete--utility {
   grid-column: 4 / 5;
 }
 
-.calculator__buttons__add {
+.calculator__buttons__add--sign {
   grid-column: 4 / 5;
   grid-row: 3 / 5;
 }
@@ -63,6 +88,40 @@ body {
   font-size: 1vh;
 }
 
-.calculator__buttons__equals {
+.calculator__buttons__equals--sign {
   grid-column: 3 / 5;
+}
+
+[class^="calculator__buttons"][class$="--top"] {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  height: 100%;
+  width: 100%;
+  border: 0.3vh solid var(--button_outline_color);
+  border-radius: var(--button_radius);
+  background: var(--button_color);
+  color: var(--button_outline_color);
+  transform: translateY(-0.6vh);
+  transition: transform 0.1s ease;
+}
+
+[class^="calculator__buttons"][class$="--sign--top"] {
+  background: var(--button-sign_color);
+  color: var(--button_outline_color);
+}
+
+[class^="calculator__buttons"][class$="--utility--top"] {
+  background: var(--button-utility_color);
+  color: var(--button_outline_color);
+}
+
+.calculator__buttons > *:hover [class$="--top"] {
+  /* Pull the button upwards when hovered */
+  transform: translateY(-0.9vh);
+}
+
+.calculator__buttons > *:active [class$="--top"] {
+  /* Push the button downwards when pressed */
+  transform: translateY(0);
 }

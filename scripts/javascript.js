@@ -22,7 +22,7 @@ function calculateDimensions() {
 }
 
 function refreshScreen() {
-  document.querySelector(".calculator__screen").textContent = screen.print;
+  document.querySelector(".calculator__screen--top").textContent = screen.print;
   screen.print = screen.clear ? "0" : screen.print;
   screen.clear = false;
 }
@@ -137,32 +137,40 @@ function registerOperation(button) {
 }
 
 function initButtons() {
-  const addButton = document.querySelector(".calculator__buttons__add");
+  const addButton = document.querySelector(".calculator__buttons__add--sign");
   addButton.addEventListener("click", () => registerOperation("+"));
 
   const substractButton = document.querySelector(
-    ".calculator__buttons__substract"
+    ".calculator__buttons__substract--sign"
   );
   substractButton.addEventListener("click", () => registerOperation("-"));
 
   const multiplyButton = document.querySelector(
-    ".calculator__buttons__multiply"
+    ".calculator__buttons__multiply--sign"
   );
   multiplyButton.addEventListener("click", () => registerOperation("*"));
 
-  const divideButton = document.querySelector(".calculator__buttons__divide");
+  const divideButton = document.querySelector(
+    ".calculator__buttons__divide--sign"
+  );
   divideButton.addEventListener("click", () => registerOperation("/"));
 
-  const equalsButton = document.querySelector(".calculator__buttons__equals");
+  const equalsButton = document.querySelector(
+    ".calculator__buttons__equals--sign"
+  );
   equalsButton.addEventListener("click", () => registerOperation("="));
 
   const floatButton = document.querySelector(".calculator__buttons__float");
   floatButton.addEventListener("click", () => registerOperation("."));
 
-  const clearButton = document.querySelector(".calculator__buttons__clear");
+  const clearButton = document.querySelector(
+    ".calculator__buttons__clear--utility"
+  );
   clearButton.addEventListener("click", () => registerOperation("c"));
 
-  const deleteButton = document.querySelector(".calculator__buttons__delete");
+  const deleteButton = document.querySelector(
+    ".calculator__buttons__delete--utility"
+  );
   deleteButton.addEventListener("click", () => registerOperation("d"));
 
   const oneButton = document.querySelector(".calculator__buttons__one");
