@@ -1,7 +1,3 @@
-let screen = {
-  print: "0",
-  clear: false,
-};
 let calculation = {
   mode: {
     typing: true,
@@ -43,6 +39,30 @@ function calculateDimensions() {
   }
 }
 
+function showActiveOperation() {
+  let signButtons = document.querySelectorAll(
+    `[class^="calculator__buttons"][class$="--sign--top"]`
+  );
+  signButtons.forEach(function (button) {
+    button.style.background = "var(--button-sign_color)";
+    button.style.color = "var(--button_outline_color)";
+  });
+  if (calculation.activeOperator !== null) {
+    let operator = {
+      ["+"]: "add",
+      ["-"]: "substract",
+      ["*"]: "multiply",
+      ["/"]: "divide",
+    };
+    let activeButton = document.querySelector(
+      `.calculator__buttons__${operator[calculation.activeOperator]}--sign--top`
+    );
+    activeButton.style.background = "rgb(70, 70, 70)";
+    activeButton.style.color = "rgb(220, 220, 220)";
+    return;
+  }
+}
+
 function setModButtons(buttonStatus) {
   const buttons = {
     clear: buttonStatus[0],
@@ -61,6 +81,9 @@ function modOptions(mode, button) {
     if (calculation.mode.operation) {
       if (button !== "undo") {
         calculation.number.shown = "0";
+      }
+      if (button === "undo") {
+        calculation.activeOperator = null;
       }
     }
     setModButtons([
@@ -95,24 +118,7 @@ function setMode(newMode, button) {
   }
   console.log(`set mode: ${newMode}`);
   calculation.mode[newMode] = true;
-}
-
-function showActiveOperation() {
-  if (operation.active !== null) {
-    let activeButton = document.querySelector(
-      `.calculator__buttons__${operation.active}--sign--top`
-    );
-    activeButton.style.background = "rgb(70, 70, 70)";
-    activeButton.style.color = "rgb(220, 220, 220)";
-    return;
-  }
-  let signButtons = document.querySelectorAll(
-    `[class^="calculator__buttons"][class$="--sign--top"]`
-  );
-  signButtons.forEach(function (button) {
-    button.style.background = "var(--button-sign_color)";
-    button.style.color = "var(--button_outline_color)";
-  });
+  showActiveOperation();
 }
 
 function refreshScreen() {
@@ -160,6 +166,7 @@ function clear() {
   setMode("typing");
   calculation.number.shown = "0";
   calculation.activeOperator = null;
+  showActiveOperation();
 }
 
 function undo() {
