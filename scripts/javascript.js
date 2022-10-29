@@ -8,9 +8,10 @@ let calculation = {
     operation: false,
     result: false,
   },
-  result: {
+  number: {
+    temp1: null,
+    temp2: null,
     shown: "0",
-    temp: null,
   },
   activeOperator: null,
   buttons: {
@@ -42,43 +43,58 @@ function calculateDimensions() {
   }
 }
 
+function setModButtons(buttonStatus) {
+  const buttons = {
+    clear: buttonStatus[0],
+    undo: buttonStatus[1],
+    operators: buttonStatus[2],
+    numbers: buttonStatus[3],
+    equal: buttonStatus[4],
+  };
+  for (const [button, status] of Object.entries(buttons)) {
+    calculation.buttons[button].isActive = status;
+  }
+}
+
 function modOptions(mode, button) {
-  // TODO: store the active buttons in an array and loop over it
   if (mode === "typing") {
-    calculation.activeOperator = null;
-    // Active buttons
-    calculation.buttons.clear.isActive = true;
-    calculation.buttons.undo.isActive = true;
-    calculation.buttons.operators.isActive = true;
-    calculation.buttons.numbers.isActive = true;
-    calculation.buttons.equal.isActive = false;
+    if (calculation.mode.operation) {
+      if (button !== "undo") {
+        calculation.number.shown = "0";
+      }
+    }
+    setModButtons([
+      true,
+      true,
+      true,
+      true,
+      calculation.number.temp1 === null ? false : true,
+    ]);
   }
   if (mode === "operation") {
-    calculation.result.temp = calculation.result.shown;
+    calculation.number.temp1 = calculation.number.shown;
     calculation.activeOperator = button;
-    // Active buttons
-    calculation.buttons.clear.isActive = true;
-    calculation.buttons.undo.isActive = true;
-    calculation.buttons.operators.isActive = true;
-    calculation.buttons.numbers.isActive = true;
-    calculation.buttons.equal.isActive = true;
+    setModButtons([true, true, true, true, true]);
   }
   if (mode === "result") {
-    // Active buttons
-    calculation.buttons.clear.isActive = true;
-    calculation.buttons.undo.isActive = false;
-    calculation.buttons.operators.isActive = true;
-    calculation.buttons.numbers.isActive = false;
-    calculation.buttons.equal.isActive = true;
+    if (!calculation.mode.result) {
+      calculation.number.temp2 = calculation.number.shown;
+      equals(calculation.number.temp1, calculation.number.shown);
+    }
+    if (calculation.mode.result) {
+      equals(calculation.number.temp2, calculation.number.shown);
+    }
+    setModButtons([true, false, true, false, true]);
   }
 }
 
 function setMode(newMode, button) {
+  modOptions(newMode, button);
   for (const mode in calculation.mode) {
     calculation.mode[mode] = false;
   }
+  console.log(`set mode: ${newMode}`);
   calculation.mode[newMode] = true;
-  modOptions(newMode, button);
 }
 
 function showActiveOperation() {
@@ -101,7 +117,7 @@ function showActiveOperation() {
 
 function refreshScreen() {
   let screen = document.querySelector(".calculator__screen--top");
-  screen.textContent = calculation.result.shown;
+  screen.textContent = calculation.number.shown;
 }
 
 function add(num1, num2) {
@@ -121,40 +137,39 @@ function divide(num1, num2) {
   return num2 === 0 ? msg : num1 / num2;
 }
 
-function equals() {
-  // switch (operation.sign) {
-  //   case "add":
-  //     screen.print = add(operation.number.first, operation.number.second);
-  //     break;
-  //   case "substract":
-  //     screen.print = substract(operation.number.first, operation.number.second);
-  //     break;
-  //   case "multiply":
-  //     screen.print = multiply(operation.number.first, operation.number.second);
-  //     break;
-  //   case "divide":
-  //     screen.print = divide(operation.number.first, operation.number.second);
-  //     break;
-  //
-  //   default:
-  //     break;
-  // }
+function equals(num1, num2) {
+  num1 = parseFloat(num1);
+  num2 = parseFloat(num2);
+  switch (calculation.activeOperator) {
+    case "+":
+      calculation.number.shown = add(num1, num2);
+      break;
+    case "-":
+      calculation.number.shown = substract(num1, num2);
+      break;
+    case "*":
+      calculation.number.shown = multiply(num1, num2);
+      break;
+    case "/":
+      calculation.number.shown = divide(num1, num2);
+      break;
+  }
 }
 
 function clear() {
   setMode("typing");
-  calculation.result.shown = "0";
+  calculation.number.shown = "0";
   calculation.activeOperator = null;
 }
 
 function undo() {
-  let screen = calculation.result.shown;
+  let screen = calculation.number.shown;
 
   if (!calculation.mode.result) {
     screen = screen.length === 1 ? "0" : screen.slice(0, -1);
   }
 
-  calculation.result.shown = screen;
+  calculation.number.shown = screen;
 }
 
 function writeScreen(button) {
@@ -162,7 +177,7 @@ function writeScreen(button) {
     clear();
   }
 
-  let screen = calculation.result.shown;
+  let screen = calculation.number.shown;
 
   if (screen.length > 10) {
     return;
@@ -177,7 +192,7 @@ function writeScreen(button) {
     screen = screen.concat("", button);
   }
 
-  calculation.result.shown = screen;
+  calculation.number.shown = screen;
 }
 
 function initCalculation(button) {
@@ -198,7 +213,6 @@ function initCalculation(button) {
   if (calculation.buttons.numbers.isActive) {
     if (calculation.buttons.numbers.valid.includes(button)) {
       if (!calculation.mode.typing) {
-        calculation.result.shown = "0";
         setMode("typing");
       }
       writeScreen(button);
@@ -209,9 +223,11 @@ function initCalculation(button) {
       setMode("operation", button);
     }
   }
-  // if (button === "=") {
-  //   endOperation();
-  // }
+  if (calculation.buttons.equal.isActive) {
+    if (button === "=") {
+      setMode("result", button);
+    }
+  }
   refreshScreen();
   debug();
 }
@@ -363,17 +379,18 @@ function debug() {
   console.log(`operation: ${calculation.mode.operation}`);
   console.log(`result: ${calculation.mode.result}`);
 
-  console.log(`---calculation.result---`);
-  console.log(`shown: ${calculation.result.shown}`);
-  console.log(`temp: ${calculation.result.temp}`);
+  console.log(`---calculation.number---`);
+  console.log(`shown: ${calculation.number.shown}`);
+  console.log(`temp1: ${calculation.number.temp1}`);
+  console.log(`temp2: ${calculation.number.temp2}`);
 
   console.log(`---calculation---`);
   console.log(`activeOperator: ${calculation.activeOperator}`);
 
-  // console.log(`---calculation.buttons---`);
-  // console.log(`clear.isActive: ${calculation.buttons.clear.isActive}`);
-  // console.log(`undo.isActive: ${calculation.buttons.undo.isActive}`);
-  // console.log(`operators.isActive: ${calculation.buttons.operators.isActive}`);
-  // console.log(`numbers.isActive: ${calculation.buttons.numbers.isActive}`);
-  // console.log(`equal.isActive: ${calculation.buttons.equal.isActive}`);
+  console.log(`---calculation.buttons---`);
+  console.log(`clear.isActive: ${calculation.buttons.clear.isActive}`);
+  console.log(`undo.isActive: ${calculation.buttons.undo.isActive}`);
+  console.log(`operators.isActive: ${calculation.buttons.operators.isActive}`);
+  console.log(`numbers.isActive: ${calculation.buttons.numbers.isActive}`);
+  console.log(`equal.isActive: ${calculation.buttons.equal.isActive}`);
 }
