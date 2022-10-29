@@ -75,7 +75,7 @@ body {
   background: var(--button_outline_color);
 }
 
-.calculator__buttons__delete--utility {
+.calculator__buttons__undo--utility {
   grid-column: 4 / 5;
 }
 
