@@ -1,21 +1,37 @@
 let screen = {
   print: "0",
   clear: false,
-  validCharacters: [".", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
 };
 let calculation = {
   mode: {
-    first: true,
-    operator: false,
-    second: false,
+    typing: true,
+    operation: false,
     result: false,
   },
   result: {
     shown: "0",
     temp: null,
   },
-  validOperators: ["+", "-", "*", "/"],
   activeOperator: null,
+  buttons: {
+    clear: {
+      isActive: false,
+    },
+    undo: {
+      isActive: false,
+    },
+    operators: {
+      isActive: false,
+      valid: ["+", "-", "*", "/"],
+    },
+    numbers: {
+      isActive: false,
+      valid: [".", "0", "1", "2", "3", "4", "5", "6", "7", "8", "9"],
+    },
+    equal: {
+      isActive: false,
+    },
+  },
 };
 
 function calculateDimensions() {
@@ -26,11 +42,43 @@ function calculateDimensions() {
   }
 }
 
-function setMode(newMode) {
+function modOptions(mode, button) {
+  // TODO: store the active buttons in an array and loop over it
+  if (mode === "typing") {
+    calculation.activeOperator = null;
+    // Active buttons
+    calculation.buttons.clear.isActive = true;
+    calculation.buttons.undo.isActive = true;
+    calculation.buttons.operators.isActive = true;
+    calculation.buttons.numbers.isActive = true;
+    calculation.buttons.equal.isActive = false;
+  }
+  if (mode === "operation") {
+    calculation.result.temp = calculation.result.shown;
+    calculation.activeOperator = button;
+    // Active buttons
+    calculation.buttons.clear.isActive = true;
+    calculation.buttons.undo.isActive = true;
+    calculation.buttons.operators.isActive = true;
+    calculation.buttons.numbers.isActive = true;
+    calculation.buttons.equal.isActive = true;
+  }
+  if (mode === "result") {
+    // Active buttons
+    calculation.buttons.clear.isActive = true;
+    calculation.buttons.undo.isActive = false;
+    calculation.buttons.operators.isActive = true;
+    calculation.buttons.numbers.isActive = false;
+    calculation.buttons.equal.isActive = true;
+  }
+}
+
+function setMode(newMode, button) {
   for (const mode in calculation.mode) {
     calculation.mode[mode] = false;
   }
   calculation.mode[newMode] = true;
+  modOptions(newMode, button);
 }
 
 function showActiveOperation() {
@@ -94,7 +142,7 @@ function equals() {
 }
 
 function clear() {
-  setMode("first");
+  setMode("typing");
   calculation.result.shown = "0";
   calculation.activeOperator = null;
 }
@@ -133,42 +181,59 @@ function writeScreen(button) {
 }
 
 function initCalculation(button) {
-  if (button === "clear") {
-    clear();
+  if (calculation.buttons.clear.isActive) {
+    if (button === "clear") {
+      clear();
+    }
   }
-  if (button === "undo") {
-    undo();
+  if (calculation.buttons.undo.isActive) {
+    if (button === "undo") {
+      if (calculation.mode.operation) {
+        setMode("typing", button);
+      } else {
+        undo();
+      }
+    }
   }
-  if (screen.validCharacters.includes(button)) {
-    writeScreen(button);
+  if (calculation.buttons.numbers.isActive) {
+    if (calculation.buttons.numbers.valid.includes(button)) {
+      if (!calculation.mode.typing) {
+        calculation.result.shown = "0";
+        setMode("typing");
+      }
+      writeScreen(button);
+    }
   }
-  // if (calculation.validSigns.includes(button)) {
-  //   startOperation(button);
-  // }
+  if (calculation.buttons.operators.isActive) {
+    if (calculation.buttons.operators.valid.includes(button)) {
+      setMode("operation", button);
+    }
+  }
   // if (button === "=") {
   //   endOperation();
   // }
   refreshScreen();
+  debug();
 }
 
 function initButtons() {
   const addButton = document.querySelector(".calculator__buttons__add--sign");
-  addButton.addEventListener("click", () => initCalculation("add"));
+  addButton.addEventListener("click", () => initCalculation("+"));
 
   const substractButton = document.querySelector(
     ".calculator__buttons__substract--sign"
   );
-  substractButton.addEventListener("click", () => initCalculation("substract"));
+  substractButton.addEventListener("click", () => initCalculation("-"));
 
   const multiplyButton = document.querySelector(
     ".calculator__buttons__multiply--sign"
   );
-  multiplyButton.addEventListener("click", () => initCalculation("multiply"));
+  multiplyButton.addEventListener("click", () => initCalculation("*"));
 
   const divideButton = document.querySelector(
     ".calculator__buttons__divide--sign"
   );
-  divideButton.addEventListener("click", () => initCalculation("divide"));
+  divideButton.addEventListener("click", () => initCalculation("/"));
 
   const equalsButton = document.querySelector(
     ".calculator__buttons__equals--sign"
@@ -289,8 +354,26 @@ function initButtons() {
 
 calculateDimensions();
 initButtons();
+setMode("typing");
 function debug() {
   // NOTE: Remove when project is done
-  console.log(`operation.number.first = ${operation.number.first}`);
-  console.log(`operation.number.second = ${operation.number.second}`);
+
+  console.log(`---calculation.mode---`);
+  console.log(`typing: ${calculation.mode.typing}`);
+  console.log(`operation: ${calculation.mode.operation}`);
+  console.log(`result: ${calculation.mode.result}`);
+
+  console.log(`---calculation.result---`);
+  console.log(`shown: ${calculation.result.shown}`);
+  console.log(`temp: ${calculation.result.temp}`);
+
+  console.log(`---calculation---`);
+  console.log(`activeOperator: ${calculation.activeOperator}`);
+
+  // console.log(`---calculation.buttons---`);
+  // console.log(`clear.isActive: ${calculation.buttons.clear.isActive}`);
+  // console.log(`undo.isActive: ${calculation.buttons.undo.isActive}`);
+  // console.log(`operators.isActive: ${calculation.buttons.operators.isActive}`);
+  // console.log(`numbers.isActive: ${calculation.buttons.numbers.isActive}`);
+  // console.log(`equal.isActive: ${calculation.buttons.equal.isActive}`);
 }
