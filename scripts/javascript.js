@@ -5,9 +5,10 @@ let calculation = {
     result: false,
   },
   number: {
-    temp1: null,
-    temp2: null,
-    shown: "0",
+    first: null,
+    second: null,
+    shownOperation: null,
+    shownResult: "0",
   },
   activeOperator: null,
   buttons: {
@@ -80,7 +81,7 @@ function modOptions(mode, button) {
   if (mode === "typing") {
     if (calculation.mode.operation) {
       if (button !== "undo") {
-        calculation.number.shown = "0";
+        calculation.number.shownResult = "0";
       }
       if (button === "undo") {
         calculation.activeOperator = null;
@@ -91,22 +92,25 @@ function modOptions(mode, button) {
       true,
       true,
       true,
-      calculation.number.temp1 === null ? false : true,
+      calculation.number.first === null ? false : true,
     ]);
   }
   if (mode === "operation") {
-    calculation.number.temp1 = calculation.number.shown;
+    calculation.number.first = calculation.number.shownResult;
+    calculation.number.shownResult = null;
+    calculation.number.shownOperation = calculation.number.first;
     calculation.activeOperator = button;
     setModButtons([true, true, true, true, true]);
   }
   if (mode === "result") {
     if (!calculation.mode.result) {
-      calculation.number.temp2 = calculation.number.shown;
-      equals(calculation.number.temp1, calculation.number.shown);
+      calculation.number.second = calculation.number.shownResult;
+      calculation.number.shownOperation = calculation.number.second;
     }
     if (calculation.mode.result) {
-      equals(calculation.number.temp2, calculation.number.shown);
+      calculation.number.first = calculation.number.shownResult;
     }
+    equals(calculation.number.first, calculation.number.second);
     setModButtons([true, false, true, false, true]);
   }
 }
@@ -116,14 +120,15 @@ function setMode(newMode, button) {
   for (const mode in calculation.mode) {
     calculation.mode[mode] = false;
   }
-  console.log(`set mode: ${newMode}`);
   calculation.mode[newMode] = true;
   showActiveOperation();
 }
 
 function refreshScreen() {
-  let screen = document.querySelector(".calculator__screen--top");
-  screen.textContent = calculation.number.shown;
+  let operation = document.querySelector(".calculator__screen__operation--top");
+  let result = document.querySelector(".calculator__screen__result--top");
+  result.textContent = calculation.number.shownResult;
+  operation.textContent = calculation.number.shownOperation;
 }
 
 function add(num1, num2) {
@@ -146,37 +151,52 @@ function divide(num1, num2) {
 function equals(num1, num2) {
   num1 = parseFloat(num1);
   num2 = parseFloat(num2);
+
+  function getDecimalsCount(num) {
+    // https://stackoverflow.com/questions/9553354/how-do-i-get-the-decimal-places-of-a-floating-point-number-in-javascript#comment99611709_9553423
+    if (isNaN(+num)) return 0;
+    const decimals = (num + "").split(".")[1];
+    if (decimals) return decimals.length;
+    return 0;
+  }
+
+  let result = 0;
   switch (calculation.activeOperator) {
     case "+":
-      calculation.number.shown = add(num1, num2);
+      result = add(num1, num2);
       break;
     case "-":
-      calculation.number.shown = substract(num1, num2);
+      result = substract(num1, num2);
       break;
     case "*":
-      calculation.number.shown = multiply(num1, num2);
+      result = multiply(num1, num2);
       break;
     case "/":
-      calculation.number.shown = divide(num1, num2);
+      result = divide(num1, num2);
       break;
   }
+  let decimalsCount = Math.max(getDecimalsCount(num1), getDecimalsCount(num2));
+  calculation.number.shownResult = result.toFixed(decimalsCount);
 }
 
 function clear() {
   setMode("typing");
-  calculation.number.shown = "0";
+  calculation.number.first = null;
+  calculation.number.second = null;
+  calculation.number.shownResult = "0";
+  calculation.number.shownOperation = null;
   calculation.activeOperator = null;
   showActiveOperation();
 }
 
 function undo() {
-  let screen = calculation.number.shown;
+  let screenResult = calculation.number.shownResult;
 
   if (!calculation.mode.result) {
-    screen = screen.length === 1 ? "0" : screen.slice(0, -1);
+    screenResult = screenResult.length === 1 ? "0" : screenResult.slice(0, -1);
   }
 
-  calculation.number.shown = screen;
+  calculation.number.shownResult = screenResult;
 }
 
 function writeScreen(button) {
@@ -184,7 +204,7 @@ function writeScreen(button) {
     clear();
   }
 
-  let screen = calculation.number.shown;
+  let screen = calculation.number.shownResult;
 
   if (screen.length > 10) {
     return;
@@ -199,7 +219,7 @@ function writeScreen(button) {
     screen = screen.concat("", button);
   }
 
-  calculation.number.shown = screen;
+  calculation.number.shownResult = screen;
 }
 
 function initCalculation(button) {
@@ -381,23 +401,24 @@ setMode("typing");
 function debug() {
   // NOTE: Remove when project is done
 
-  console.log(`---calculation.mode---`);
-  console.log(`typing: ${calculation.mode.typing}`);
-  console.log(`operation: ${calculation.mode.operation}`);
-  console.log(`result: ${calculation.mode.result}`);
+  // console.log(`---calculation.mode---`);
+  // console.log(`typing: ${calculation.mode.typing}`);
+  // console.log(`operation: ${calculation.mode.operation}`);
+  // console.log(`result: ${calculation.mode.result}`);
 
   console.log(`---calculation.number---`);
-  console.log(`shown: ${calculation.number.shown}`);
-  console.log(`temp1: ${calculation.number.temp1}`);
-  console.log(`temp2: ${calculation.number.temp2}`);
+  console.log(`temp1: ${calculation.number.first}`);
+  console.log(`temp2: ${calculation.number.second}`);
+  console.log(`shownResult: ${calculation.number.shownResult}`);
+  console.log(`shownOperation: ${calculation.number.shownOperation}`);
 
-  console.log(`---calculation---`);
-  console.log(`activeOperator: ${calculation.activeOperator}`);
+  // console.log(`---calculation---`);
+  // console.log(`activeOperator: ${calculation.activeOperator}`);
 
-  console.log(`---calculation.buttons---`);
-  console.log(`clear.isActive: ${calculation.buttons.clear.isActive}`);
-  console.log(`undo.isActive: ${calculation.buttons.undo.isActive}`);
-  console.log(`operators.isActive: ${calculation.buttons.operators.isActive}`);
-  console.log(`numbers.isActive: ${calculation.buttons.numbers.isActive}`);
-  console.log(`equal.isActive: ${calculation.buttons.equal.isActive}`);
+  // console.log(`---calculation.buttons---`);
+  // console.log(`clear.isActive: ${calculation.buttons.clear.isActive}`);
+  // console.log(`undo.isActive: ${calculation.buttons.undo.isActive}`);
+  // console.log(`operators.isActive: ${calculation.buttons.operators.isActive}`);
+  // console.log(`numbers.isActive: ${calculation.buttons.numbers.isActive}`);
+  // console.log(`equal.isActive: ${calculation.buttons.equal.isActive}`);
 }
