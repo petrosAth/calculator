@@ -97,7 +97,6 @@ function modOptions(mode, button) {
   }
   if (mode === "operation") {
     calculation.number.first = calculation.number.shownResult;
-    calculation.number.shownResult = null;
     calculation.number.shownOperation = calculation.number.first;
     calculation.activeOperator = button;
     setModButtons([true, true, true, true, true]);
@@ -328,17 +327,17 @@ function initButtons() {
 
   document.addEventListener("keyup", function (event) {
     switch (event.key) {
-      case "add":
-        initCalculation("add");
+      case "+":
+        initCalculation("+");
         break;
-      case "substract":
-        initCalculation("substract");
+      case "-":
+        initCalculation("-");
         break;
-      case "multiply":
-        initCalculation("multiply");
+      case "*":
+        initCalculation("*");
         break;
-      case "divide":
-        initCalculation("divide");
+      case "/":
+        initCalculation("/");
         break;
       case "=":
         initCalculation("=");
@@ -346,17 +345,17 @@ function initButtons() {
       case "Enter":
         initCalculation("=");
         break;
-      case "float":
-        initCalculation("float");
+      case ".":
+        initCalculation(".");
         break;
       case "c":
-        initCalculation("c");
+        initCalculation("clear");
         break;
       case "Delete":
-        initCalculation("c");
+        initCalculation("clear");
         break;
       case "Backspace":
-        initCalculation("d");
+        initCalculation("undo");
         break;
       case "0":
         initCalculation("0");
