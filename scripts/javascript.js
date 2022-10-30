@@ -32,14 +32,6 @@ let calculation = {
   },
 };
 
-function calculateDimensions() {
-  if (window.innerWidth > window.innerHeight) {
-    document.querySelector(".calculator").style.maxHeight = "90vh";
-  } else {
-    document.querySelector(".calculator").style.maxWidth = "90vw";
-  }
-}
-
 function showActiveOperation() {
   let signButtons = document.querySelectorAll(
     `[class^="calculator__buttons"][class$="--sign--top"]`
