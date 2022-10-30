@@ -337,7 +337,9 @@ function initButtons() {
 
   const zeroButton = document.querySelector(".calculator__buttons__zero");
   zeroButton.addEventListener("click", () => initCalculation("0"));
+}
 
+function initKeyboardMapping() {
   document.addEventListener("keyup", function (event) {
     switch (event.key) {
       case "+":
@@ -407,30 +409,10 @@ function initButtons() {
   });
 }
 
-calculateDimensions();
-initButtons();
-setMode("typing");
-function debug() {
-  // NOTE: Remove when project is done
-
-  // console.log(`---calculation.mode---`);
-  // console.log(`typing: ${calculation.mode.typing}`);
-  // console.log(`operation: ${calculation.mode.operation}`);
-  // console.log(`result: ${calculation.mode.result}`);
-
-  console.log(`---calculation.number---`);
-  console.log(`temp1: ${calculation.number.first}`);
-  console.log(`temp2: ${calculation.number.second}`);
-  console.log(`shownResult: ${calculation.number.shownResult}`);
-  console.log(`shownOperation: ${calculation.number.shownOperation}`);
-
-  // console.log(`---calculation---`);
-  // console.log(`activeOperator: ${calculation.activeOperator}`);
-
-  // console.log(`---calculation.buttons---`);
-  // console.log(`clear.isActive: ${calculation.buttons.clear.isActive}`);
-  // console.log(`undo.isActive: ${calculation.buttons.undo.isActive}`);
-  // console.log(`operators.isActive: ${calculation.buttons.operators.isActive}`);
-  // console.log(`numbers.isActive: ${calculation.buttons.numbers.isActive}`);
-  // console.log(`equal.isActive: ${calculation.buttons.equal.isActive}`);
+function init() {
+  setMode("typing");
+  initButtons();
+  initKeyboardMapping();
 }
+
+init();
