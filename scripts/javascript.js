@@ -195,6 +195,9 @@ function equals(num1, num2) {
   }
 
   let result = 0;
+  let decimalsCount = Math.max(getDecimalsCount(num1), getDecimalsCount(num2));
+  let resultDecimalsCount = 0;
+  let clearDecimals = true;
   switch (calculation.activeOperator) {
     case "+":
       result = add(num1, num2);
@@ -207,10 +210,14 @@ function equals(num1, num2) {
       break;
     case "/":
       result = divide(num1, num2);
+      clearDecimals = false;
       break;
   }
-  let decimalsCount = Math.max(getDecimalsCount(num1), getDecimalsCount(num2));
-  let resultDecimalsCount = getDecimalsCount(result.toFixed(decimalsCount));
+  if (clearDecimals) {
+    resultDecimalsCount = getDecimalsCount(result.toFixed(decimalsCount));
+  } else {
+    resultDecimalsCount = Math.min(9, getDecimalsCount(result));
+  }
   calculation.number.shownResult = result.toFixed(resultDecimalsCount);
 }
 
