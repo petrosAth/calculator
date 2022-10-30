@@ -64,6 +64,48 @@ function showActiveOperation() {
   }
 }
 
+function clearRedundantFloat(string) {
+  if (string !== null) {
+    if (string.lastIndexOf(".") === string.length - 1) {
+      return string.slice(0, string.lastIndexOf("."));
+    }
+  }
+  return string;
+}
+
+function writeScreen(button) {
+  if (calculation.mode.result) {
+    clear();
+  }
+
+  let shownResult = calculation.number.shownResult;
+  let shownOperation = calculation.number.shownOperation;
+
+  if (shownResult.length > 10) {
+    return;
+  }
+  if (button === ".") {
+    if (!shownResult.includes(".")) {
+      shownResult = shownResult.concat("", ".");
+    }
+  } else if (shownResult === "0") {
+    shownResult = button;
+  } else {
+    shownResult = shownResult.concat("", button);
+  }
+
+  calculation.number.shownResult = shownResult;
+  calculation.number.shownOperation = shownOperation;
+}
+
+function refreshScreen() {
+  let operation = document.querySelector(".calculator__screen__operation--top");
+  let result = document.querySelector(".calculator__screen__result--top");
+
+  operation.textContent = calculation.number.shownOperation;
+  result.textContent = calculation.number.shownResult;
+}
+
 function setModButtons(buttonStatus) {
   const buttons = {
     clear: buttonStatus[0],
@@ -96,6 +138,9 @@ function modOptions(mode, button) {
     ]);
   }
   if (mode === "operation") {
+    calculation.number.shownResult = clearRedundantFloat(
+      calculation.number.shownResult
+    );
     calculation.number.first = calculation.number.shownResult;
     calculation.number.shownOperation = calculation.number.first;
     calculation.activeOperator = button;
@@ -123,13 +168,6 @@ function setMode(newMode, button) {
   showActiveOperation();
 }
 
-function refreshScreen() {
-  let operation = document.querySelector(".calculator__screen__operation--top");
-  let result = document.querySelector(".calculator__screen__result--top");
-  result.textContent = calculation.number.shownResult;
-  operation.textContent = calculation.number.shownOperation;
-}
-
 function add(num1, num2) {
   return num1 + num2;
 }
@@ -155,7 +193,12 @@ function equals(num1, num2) {
     // https://stackoverflow.com/questions/9553354/how-do-i-get-the-decimal-places-of-a-floating-point-number-in-javascript#comment99611709_9553423
     if (isNaN(+num)) return 0;
     const decimals = (num + "").split(".")[1];
-    if (decimals) return decimals.length;
+    if (decimals) {
+      if (decimals === "0") {
+        return 0;
+      }
+      return decimals.length;
+    }
     return 0;
   }
 
@@ -175,7 +218,8 @@ function equals(num1, num2) {
       break;
   }
   let decimalsCount = Math.max(getDecimalsCount(num1), getDecimalsCount(num2));
-  calculation.number.shownResult = result.toFixed(decimalsCount);
+  let resultDecimalsCount = getDecimalsCount(result.toFixed(decimalsCount));
+  calculation.number.shownResult = result.toFixed(resultDecimalsCount);
 }
 
 function clear() {
@@ -196,29 +240,6 @@ function undo() {
   }
 
   calculation.number.shownResult = screenResult;
-}
-
-function writeScreen(button) {
-  if (calculation.mode.result) {
-    clear();
-  }
-
-  let screen = calculation.number.shownResult;
-
-  if (screen.length > 10) {
-    return;
-  }
-  if (button === ".") {
-    if (!screen.includes(".")) {
-      screen = screen.concat("", ".");
-    }
-  } else if (screen === "0") {
-    screen = button;
-  } else {
-    screen = screen.concat("", button);
-  }
-
-  calculation.number.shownResult = screen;
 }
 
 function initCalculation(button) {
