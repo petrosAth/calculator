@@ -73,7 +73,7 @@ function writeScreen(button) {
   let shownResult = calculation.number.shownResult;
   let shownOperation = calculation.number.shownOperation;
 
-  if (shownResult.length > 10) {
+  if (shownResult.length > 14) {
     return;
   }
   if (button === ".") {
